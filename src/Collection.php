@@ -1,69 +1,75 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace ltribolet\Collection;
 
-class Collection implements \Countable, \Iterator, \IteratorAggregate, \ArrayAccess
+final class Collection extends \IteratorIterator
 {
-    private $elements;
-
-    public function __construct()
+    public static function build($elements): Collection
     {
+        if (is_callable($elements)) {
+            return static::fromCallable($elements);
+        }
+
+        if ($elements instanceof \Generator) {
+            return static::fromGenerator($elements);
+        }
+
+        if (\is_array($elements)) {
+            return static::fromArray($elements);
+        }
+
+        throw new \InvalidArgumentException('Type unknown, cannot handle');
     }
 
-    public function getIterator()
+    public static function fromArray(array $elements): Collection
     {
-        // TODO: Implement getIterator() method.
+        return new static(new \ArrayIterator($elements));
     }
 
-    public function current()
+    public static function fromGenerator(\Generator $elements): Collection
     {
-        // TODO: Implement current() method.
+        return new static($elements);
     }
 
-    public function next()
+    public static function fromCallable(callable $callable): Collection
     {
-        // TODO: Implement next() method.
+        // Kick off the callable into a generator.
+        $generator = $callable();
+        if (!$generator instanceof \Generator) {
+            throw new \InvalidArgumentException('fromGenerator failed');
+        }
+
+        return new static($generator);
     }
 
-    public function key()
+    public function each(callable $callback): Collection
     {
-        // TODO: Implement key() method.
+        foreach ($this->getInnerIterator() as $key => $value) {
+            $callback($value, $key);
+        }
+
+        return $this;
     }
 
-    public function valid()
+    public function filter(callable $callback): Collection
     {
-        // TODO: Implement valid() method.
+        return self::fromCallable(function () use ($callback) {
+            foreach ($this->getInnerIterator() as $key => $value) {
+                if ($callback($value, $key)) {
+                    yield $key => $value;
+                }
+            }
+        });
     }
 
-    public function rewind()
+    public function map(callable $callback): Collection
     {
-        // TODO: Implement rewind() method.
-    }
-
-    public function offsetExists($offset)
-    {
-        // TODO: Implement offsetExists() method.
-    }
-
-    public function offsetGet($offset)
-    {
-        // TODO: Implement offsetGet() method.
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        // TODO: Implement offsetSet() method.
-    }
-
-    public function offsetUnset($offset)
-    {
-        // TODO: Implement offsetUnset() method.
-    }
-
-    public function count()
-    {
-        // TODO: Implement count() method.
+        return self::fromCallable(function () use ($callback) {
+            foreach ($this->getInnerIterator() as $key => $value) {
+                yield $key => $callback($value);
+            }
+        });
     }
 }
