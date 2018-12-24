@@ -49,3 +49,4 @@ $RECYCLE.BIN/
 
 ### Project Related
 vendor/
+.env

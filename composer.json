@@ -36,6 +36,9 @@
         "sort-packages": true
     },
     "scripts": {
+        "pre-install-cmd": [
+            "php -r \"if(!file_exists('.env')){copy('.env.example', '.env');}\""
+        ],
         "cs-fix": "./vendor/bin/php-cs-fixer fix .",
         "cs-fix-dry": "./vendor/bin/php-cs-fixer fix . --dry-run",
         "analyze": "./vendor/bin/phpstan analyze -l 7 src tests"
