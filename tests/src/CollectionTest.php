@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-    public function testBuild()
+    public function testBuild(): void
     {
         $generator = $this->provideGenerator();
         $array = range('a', 'z');
@@ -27,7 +27,7 @@ class CollectionTest extends TestCase
         Collection::build(null);
     }
 
-    public function testEach()
+    public function testEach(): void
     {
         $generator = $this->provideGenerator();
         $collection = Collection::build($generator);
@@ -42,7 +42,7 @@ class CollectionTest extends TestCase
         self::assertSame('abcdefghijklmnopqrstuvwxyz', $string);
     }
 
-    public function testFilter()
+    public function testFilter(): void
     {
         $generator = $this->provideGenerator();
         $collection = Collection::build($generator);
@@ -56,7 +56,7 @@ class CollectionTest extends TestCase
         self::assertSame('z', $result->current());
     }
 
-    public function testFromArray()
+    public function testFromArray(): void
     {
         $array = range(1, 10);
         $collection = Collection::fromArray($array);
@@ -68,7 +68,7 @@ class CollectionTest extends TestCase
         }
     }
 
-    public function testFromCallable()
+    public function testFromCallable(): void
     {
         $callable = function() {
             yield 1;
@@ -86,7 +86,7 @@ class CollectionTest extends TestCase
         }
     }
 
-    public function testFailFromCallable()
+    public function testFailFromCallable(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
@@ -97,7 +97,7 @@ class CollectionTest extends TestCase
         Collection::fromCallable($callable);
     }
 
-    public function testFromGenerator()
+    public function testFromGenerator(): void
     {
         $generator = $this->provideGenerator();
         $collection = Collection::fromGenerator($generator);
@@ -108,7 +108,7 @@ class CollectionTest extends TestCase
         }
     }
 
-    public function testMap()
+    public function testMap(): void
     {
         $array = range(1, 10);
         $collection = Collection::build($array);
@@ -125,7 +125,7 @@ class CollectionTest extends TestCase
         }
     }
 
-    public function testChainingMethods()
+    public function testChainingMethods(): void
     {
         $array = range(1, 10);
         $truth = range(2, 10, 2);
@@ -148,7 +148,7 @@ class CollectionTest extends TestCase
         }
     }
 
-    private function provideGenerator()
+    private function provideGenerator(): ?\Generator
     {
         yield from range('a', 'z');
     }
