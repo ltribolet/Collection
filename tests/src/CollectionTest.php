@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace ltribolet\Collection\Tests;
 
 use ltribolet\Collection\Collection;
@@ -10,9 +12,9 @@ class CollectionTest extends TestCase
     public function testBuild(): void
     {
         $generator = $this->provideGenerator();
-        $array = range('a', 'z');
-        $callback = function() {
-            yield from range('a', 'z');
+        $array = \range('a', 'z');
+        $callback = function () {
+            yield from \range('a', 'z');
         };
 
         $collection1 = Collection::build($array);
@@ -33,7 +35,7 @@ class CollectionTest extends TestCase
         $collection = Collection::build($generator);
 
         $string = '';
-        $collection->each(function ($value) use (&$string){
+        $collection->each(function ($value) use (&$string) {
             $string .= $value;
 
             return true;
@@ -48,7 +50,7 @@ class CollectionTest extends TestCase
         $collection = Collection::build($generator);
         $filter = 'z';
 
-        $result = $collection->filter(function ($value) use($filter) {
+        $result = $collection->filter(function ($value) use ($filter) {
             return $value === $filter;
         });
 
@@ -58,7 +60,7 @@ class CollectionTest extends TestCase
 
     public function testFromArray(): void
     {
-        $array = range(1, 10);
+        $array = \range(1, 10);
         $collection = Collection::fromArray($array);
 
         $i = 0;
@@ -70,7 +72,7 @@ class CollectionTest extends TestCase
 
     public function testFromCallable(): void
     {
-        $callable = function() {
+        $callable = function () {
             yield 1;
             yield 2;
             yield 3;
@@ -90,7 +92,7 @@ class CollectionTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        $callable = function() {
+        $callable = function () {
             return 1;
         };
 
@@ -110,9 +112,8 @@ class CollectionTest extends TestCase
 
     public function testMap(): void
     {
-        $array = range(1, 10);
+        $array = \range(1, 10);
         $collection = Collection::build($array);
-
 
         $result = $collection->map(function ($value) {
             return $value * 10;
@@ -127,19 +128,18 @@ class CollectionTest extends TestCase
 
     public function testChainingMethods(): void
     {
-        $array = range(1, 10);
-        $truth = range(2, 10, 2);
+        $array = \range(1, 10);
+        $truth = \range(2, 10, 2);
         $collection = Collection::build($array);
 
-
         $result = $collection
-            ->filter(function($value) {
+            ->filter(function ($value) {
                 return $value % 2 === 0;
             })
             ->map(function ($value) {
                 return $value * 10;
-            }
-        );
+            })
+        ;
 
         $i = 0;
         foreach ($result as $value) {
@@ -150,6 +150,6 @@ class CollectionTest extends TestCase
 
     private function provideGenerator(): ?\Generator
     {
-        yield from range('a', 'z');
+        yield from \range('a', 'z');
     }
 }

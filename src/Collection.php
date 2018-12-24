@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace ltribolet\Collection;
 
@@ -8,7 +8,7 @@ final class Collection extends \IteratorIterator
 {
     public static function build($elements): Collection
     {
-        if (is_callable($elements)) {
+        if (\is_callable($elements)) {
             return static::fromCallable($elements);
         }
 
