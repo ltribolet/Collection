@@ -11,12 +11,17 @@ class CollectionTest extends TestCase
     {
         $generator = $this->provideGenerator();
         $array = range('a', 'z');
+        $callback = function() {
+            yield from range('a', 'z');
+        };
 
         $collection1 = Collection::build($array);
         $collection2 = Collection::build($generator);
+        $collection3 = Collection::build($callback);
 
         self::assertInstanceOf(\Iterator::class, $collection1->getInnerIterator());
         self::assertInstanceOf(\Iterator::class, $collection2->getInnerIterator());
+        self::assertInstanceOf(\Iterator::class, $collection3->getInnerIterator());
 
         $this->expectException(\InvalidArgumentException::class);
         Collection::build(null);
