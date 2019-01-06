@@ -70,6 +70,27 @@ class CollectionTest extends TestCase
         }
     }
 
+    public function testFromAssocArray(): void
+    {
+        $array = [
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+            'd' => 4,
+            'e' => 5,
+        ];
+        $collection = Collection::fromArray($array);
+
+        $iValue = 1;
+        $iKey = 'a';
+        foreach ($collection as $key => $value) {
+            self::assertSame($iValue, $value);
+            self::assertSame($iKey, $key);
+            ++$iValue;
+            ++$iKey;
+        }
+    }
+
     public function testFromCallable(): void
     {
         $callable = function () {
@@ -145,6 +166,44 @@ class CollectionTest extends TestCase
         foreach ($result as $value) {
             self::assertSame($truth[$i] * 10, $value);
             ++$i;
+        }
+    }
+
+    public function testAdd()
+    {
+        $array = \range(1, 10);
+        $addedValue = 11;
+        $truth = \range(1, 11);
+        $collection = Collection::build($array);
+
+        $result = $collection->add($addedValue);
+
+        $i = 0;
+        foreach ($result as $value) {
+            self::assertSame($truth[$i], $value);
+            ++$i;
+        }
+    }
+
+    public function testAssocAdd()
+    {
+        $array = [
+            'a' => 1,
+            'b' => 2,
+            'c' => 3,
+            'd' => 4,
+            'e' => 5,
+        ];
+        $collection = Collection::fromArray($array);
+        $collection->add(6, 'f');
+
+        $iValue = 1;
+        $iKey = 'a';
+        foreach ($collection as $key => $value) {
+            self::assertSame($iValue, $value);
+            self::assertSame($iKey, $key);
+            ++$iValue;
+            ++$iKey;
         }
     }
 

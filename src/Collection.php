@@ -6,6 +6,11 @@ namespace ltribolet\Collection;
 
 final class Collection extends \IteratorIterator
 {
+    /**
+     * @param mixed $elements
+     *
+     * @return Collection
+     */
     public static function build($elements): Collection
     {
         if (\is_callable($elements)) {
@@ -69,6 +74,23 @@ final class Collection extends \IteratorIterator
         return self::fromCallable(function () use ($callback) {
             foreach ($this->getInnerIterator() as $key => $value) {
                 yield $key => $callback($value);
+            }
+        });
+    }
+
+    public function add($value, $key = null)
+    {
+        return self::fromCallable(function () use ($value, $key) {
+            if (!$key) {
+                $value = [$key => $value];
+            }
+
+            $appendIterator = new \AppendIterator();
+            $appendIterator->append($this->getInnerIterator());
+            $appendIterator->append(self::build($value));
+
+            foreach ($appendIterator as $iterationKey => $iterationValue) {
+                yield $key => $iterationValue;
             }
         });
     }
