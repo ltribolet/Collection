@@ -9,9 +9,10 @@ final class Collection extends \IteratorIterator
     /**
      * @param mixed $elements
      *
+     * @throws \InvalidArgumentException
      * @return Collection
      */
-    public static function build($elements): Collection
+    public static function build($elements = null): Collection
     {
         if (\is_callable($elements)) {
             return static::fromCallable($elements);
@@ -23,6 +24,10 @@ final class Collection extends \IteratorIterator
 
         if (\is_array($elements)) {
             return static::fromArray($elements);
+        }
+
+        if ($elements === null) {
+            return static::fromArray([]);
         }
 
         throw new \InvalidArgumentException('Type unknown, cannot handle');
@@ -93,5 +98,32 @@ final class Collection extends \IteratorIterator
                 yield $key => $iterationValue;
             }
         });
+    }
+
+    /**
+     * @param callable|null $callback
+     * @param mixed|null    $default
+     *
+     * @return mixed
+     */
+    public function first(?callable $callback = null, $default = null)
+    {
+        if (!$callback && \iterator_count($this->getInnerIterator()) === 0) {
+            return $default;
+        }
+
+        if (!$callback) {
+            $this->getInnerIterator()->rewind();
+
+            return $this->getInnerIterator()->current();
+        }
+
+        foreach ($this->getInnerIterator() as $key => $value) {
+            if ($callback($value, $key)) {
+                return $value;
+            }
+        }
+
+        return $default;
     }
 }

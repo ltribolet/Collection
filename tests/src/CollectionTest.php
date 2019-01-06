@@ -26,7 +26,7 @@ class CollectionTest extends TestCase
         self::assertInstanceOf(\Iterator::class, $collection3->getInnerIterator());
 
         $this->expectException(\InvalidArgumentException::class);
-        Collection::build(null);
+        Collection::build(new \stdClass());
     }
 
     public function testEach(): void
@@ -205,6 +205,52 @@ class CollectionTest extends TestCase
             ++$iValue;
             ++$iKey;
         }
+    }
+
+    public function testEmptyFirst(): void
+    {
+        $array = \range(1, 10);
+        $truth = 1;
+        $collection = Collection::build($array);
+
+        $result = $collection->first();
+
+        self::assertSame($truth, $result);
+    }
+
+    public function testCallbackFirst(): void
+    {
+        $array = \range(1, 10);
+        $truth = 5;
+        $collection = Collection::build($array);
+
+        $result = $collection->first(function ($value) {
+            return $value === 5;
+        });
+
+        self::assertSame($truth, $result);
+    }
+
+    public function testDefaultFirst(): void
+    {
+        $array = \range(1, 10);
+        $collection1 = Collection::build();
+        $collection2 = Collection::build($array);
+
+        $result1 = $collection1->first(function ($value) {
+            return $value === 5;
+        }, 5);
+        $result2 = $collection1->first(null, 20);
+
+        $result3 = $collection2->first(function ($value) {
+            return $value === 25;
+        }, 25);
+        $result4 = $collection2->first(null, 20);
+
+        self::assertSame(5, $result1);
+        self::assertSame(20, $result2);
+        self::assertSame(25, $result3);
+        self::assertSame(1, $result4);
     }
 
     private function provideGenerator(): ?\Generator
